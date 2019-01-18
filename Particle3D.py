@@ -34,8 +34,8 @@ class Particle3D(object):
         :param mass: mass as float
         """
 
-        self.position = pos
-        self.velocity = vel
+        self.position = np.array(pos)
+        self.velocity = np.array(vel)
         self.mass = mass
         self.label = label
 
@@ -46,7 +46,7 @@ class Particle3D(object):
         "p_label x = 0.0, y = 1.0, z = 2.0"
         """
 
-        return self.label + " x = " + str(self.position[0]) + ", y = " + str(self.position[1]) + ", z = " + str(self.position[2])
+        return self.label + str(self.position[0]) + str(self.position[1]) + str(self.position[2])
 
     def kinetic_energy(self):
         """
@@ -68,17 +68,7 @@ class Particle3D(object):
 
         self.velocity = self.velocity + dt*force/self.mass
 
-    def leap_pos1st(self, dt):
-        """
-        First-order position update,
-        x(t+dt) = x(t) + dt*v(t)
-
-        :param dt: timestep as float
-        """
-
-        self.position = self.position + dt*self.velocity
-
-    def leap_pos2nd(self, dt, force):
+    def leap_position(self, dt, force):
         """
         Second-order position update,
         x(t+dt) = x(t) + dt*v(t) + 1/2*dt^2*F(t)
@@ -90,32 +80,30 @@ class Particle3D(object):
         self.position = self.position + dt*self.velocity + 0.5*dt**2*force/self.mass
 
     @staticmethod
-    def from_file(file_handle):
+    def sep(p1, p2):
         """
-        A static method to create a particle from a file entry. The method takes a line
-        and splits it into the arguments of an object. The expected form of the line is:
-        "label pos_x pos_y pos_z vel_x vel_y vel_z mass"
-
-        :param: An open file that can be accessed and read
-        :return: An instance of an object (a particle object)
-        """
-
-        line = file_handle.readline()
-        args = line.split(" ")
-        label = args[0]
-        position = np.array(args[1:4],float)
-        velocity = np.array(args[4:7],float)
-        mass = float(args[7])
-        return Particle3D(label,position,velocity,mass)
-
-    @staticmethod
-    def relative_sep(p1, p2):
-        """
-        Return the relative separatin position vector directed from p1 to p2
+        Returns the relative separatin position vector directed from p1 to p2
 
         :param p1: A particle object
         :param p2: A particle object
         :return: Separation vector as numpy array
         """
 
-        return p1.position - p2.position
+        return p2.position - p1.position
+
+    @staticmethod
+    def pbc_sep(p1, p2, boxdim):
+        """
+        Returns the separation vector of two particle objects based on the minimum image convention
+        and the periodic boundary conditions, as an narray.
+        """
+        arrow = Particle3D.sep(p1,p2)
+        rem = np.mod(arrow,boxdim) # The image in the first cube
+        mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
+
+        return mic_separation_vector
+
+"""
+p1 = Particle3D("s1", np.array([1,2,4]), np.array([0,0,0]), 1)
+p2 = Particle3D("s2", np.array([4,4,4]), np.array([0,0,0]), 1)
+"""
