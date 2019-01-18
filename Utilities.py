@@ -2,6 +2,8 @@
     * This module implements various functions
     * for an argon N-body simulation.
 """
+import numpy as np
+import sys.argv
 
 def get_arguments():
 	""""The program is called with two filenames as input. The first one
@@ -10,6 +12,21 @@ def get_arguments():
 	This function parses those inputs and returns a list with the
 	contents of the first file
 	and a string with the name of the second file."""
+	if len(sys.argv) != 3:
+		print("Wrong number of arguments, give two, e.g.:")
+		print("Main.py parameters.txt vmdoutput.xyz")
+		raise Exception('Wrong arguments')
+	paramfilename = sys.argv[1]
+	VMDfile = sys.argv[2]
+	# Now get parameters individually:
+	paramfile = open(paramfilename, 'r')
+	lines = paramfile.readlines()
+	N = int(lines[1])
+	rho = float(lines[3])
+	LJ_cutoff = float(lines[5])
+	T = int(lines[7])
+	dt = float(lines[]9)
+	nsteps = int(lines[11])
 	return param = [N, rho, LJ_cutoff, T, dt, nsteps], VMDfile
 
 
@@ -36,8 +53,9 @@ def Total_PE(positions, cutoff):
 def Total_KE(velocities):
 	"""This function returns the total calculated kinetic energy
 	for an [N,3] dimensional narray of system velocities."""
-    return energy
-
+    squares = np.linalg.norm(velocities) # sum of squares of velocities
+    mass = 1 # Setting argon mass to 1
+    return 0.5*mass*squares
 
 
 def RDF(pos, start, end, bins):
@@ -47,24 +65,9 @@ def RDF(pos, start, end, bins):
     return radial_density_histogram
 
 
-
 def MSD(pos, start, length):
 	"""Given a [T, N,3]-dimensional narray of system positions indexed
 	by time, this will calculate the mean square displacement for the
 	system from time start to start+length exclusive
 	relative to the given start time."""
     return mean_square_displacement
-
-
-def set_initial_positions(rho, particles):
-	"""Sets up initial positions of a Particle3D list in FCC
-	configuration, then returns corresponding
-	box dimensions in narray."""
-    return np.array([box_size, box_size, box_size])
-
-d
-def set_initial_velocities(temp, particles):
-	"""Initialises a Particle3D list to
-	a given temperature with random velocities."""
-    return None
-
