@@ -62,7 +62,7 @@ def set_initial_positions(rho, particles):
 	box dimensions in narray."""
     return np.array([box_size, box_size, box_size])
 
-
+d
 def set_initial_velocities(temp, particles):
 	"""Initialises a Particle3D list to
 	a given temperature with random velocities."""
