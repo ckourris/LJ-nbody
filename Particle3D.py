@@ -24,7 +24,7 @@ class Particle3D(object):
       between two particle objects.
     """
 
-    def __init__(self, label, pos, vel, mass):
+    def __init__(self, label='', pos=[0,0,0], vel=[0,0,0], mass=1):
         """
         Initialise a Particle3D instance
 
