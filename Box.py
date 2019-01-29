@@ -2,7 +2,7 @@
     * This module implements the Box class and
     * methods for an argon N-body simulation.
 """
-import Particle3D
+from Particle3D import Particle3D
 import MDUtilities
 from Utilities import LJ_Force
 import numpy as np
@@ -20,7 +20,7 @@ class Box:
         """
         # Initialise list of particles with zero position and velocity
         # and label equal to their number
-        self.particles = [Particle3D.Particle3D(str(i)) for i in range(1,N+1)]
+        self.particles = [Particle3D(str(i)) for i in range(1,N+1)]
     
         self.LJ_cutoff = LJ_cutoff # Save LJ_cutoff distance.
     
@@ -61,8 +61,20 @@ class Box:
 
     def get_forces(self):
         """Returns [N,3]-dim narray of forces on all particles."""
-        return particle_forces
+        N = len(self.particles)
+        particle_forces = np.zeros( (N,3) )
 
+        # Iterate over all i<j, then calculate
+        # force for each i, j combination
+        for i in range(N):
+            for j in range(i):
+                # Get force of particle i on j, respecting pbc and mic.
+                sep = Particle3D.pbc_sep(self.particles[i], self.particles[j], self.boxdim)
+                force = LJ_Force(sep, self.LJ_cutoff)
+                particle_forces[j] += force
+                particle_forces[i] += -force # Using Newtons 3rd law
+
+        return particle_forces
     
     def VMD_string(self, time):
         """
