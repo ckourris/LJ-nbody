@@ -81,6 +81,14 @@ class Box:
         Produces a string in the VMD format giving the state of the
         current system, with Point = T. Uses the Particle3D.__str__ method.
         """
+        # First add preamble:
+        # N_data
+        # Point = time
+        # ...
+        VMD_output_string = '%i\nPoint = %i\n' % (len(self.particles), time)
+        # Concatenate labels and positions for each particle
+        for p in self.particles:
+            VMD_output_string += str(p) + '\n'
         return VMD_output_string
 
     def enforce_pbc(self):
