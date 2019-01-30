@@ -96,6 +96,9 @@ class Box:
         Enforces period boundary conditions and moves any particle that
         has strayed outside the box back into the box according to pbc.
         """
+        cube = [self.boxdim, self.boxdim, self.boxdim]
+        for particle in particles:
+            particle.position = np.mod(particle.position,cube)
         return None
 
 
@@ -110,13 +113,16 @@ class Box:
         i = 0
         while (i < nsteps):
             positions.append(get_positions())
+            enforce_pbc()
             velocities.append(get_velocities())
             time.append(i*dt)
             VMD_list.append(VMD_string())
 
+            # Updates positions, velocities etc
             update_pos(forces, dt)
             temp_forces = forces
             forces = get_forces()
             update_vel(0.5*(temp_forces + forces), dt)
+
 
         return positions, velocities, times
