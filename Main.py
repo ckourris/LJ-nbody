@@ -23,3 +23,5 @@ def main(arg1, arg2):
     Box = Box(parameters[0], parameters[2], parameters[1], parameters[3])
 
     Box.simulate()
+
+main()
