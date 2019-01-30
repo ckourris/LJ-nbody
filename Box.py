@@ -21,24 +21,24 @@ class Box:
         # Initialise list of particles with zero position and velocity
         # and label equal to their number
         self.particles = [Particle3D(str(i)) for i in range(1,N+1)]
-    
+
         self.LJ_cutoff = LJ_cutoff # Save LJ_cutoff distance.
-    
+
         # Set particle positions, get box dimensions:
         self.boxdim = MDUtilities.set_initial_positions(rho, self.particles)[0]
         MDUtilities.set_initial_velocities(T, self.particles) # Set velocities
         return None
 
-    
+
     def update_vel(self, forces, dt):
         """
         Conducts first order velocity update given
-        an narray of forces on all particles, using v = v + F*d
-        t"""
+        an narray of forces on all particles, using v = v + F*dt
+        """
         for particle, force in zip(self.particles, forces):
             particle.leap_velocity(dt, force)
         return None
-    
+
     def update_pos(self, forces, dt):
         """
         Conducts second order position update given an narray
@@ -75,7 +75,7 @@ class Box:
                 particle_forces[i] += -force # Using Newtons 3rd law
 
         return particle_forces
-    
+
     def VMD_string(self, time):
         """
         Produces a string in the VMD format giving the state of the
@@ -98,13 +98,25 @@ class Box:
         """
         return None
 
-    
+
     def simulate(self, outputfile, nsteps, dt):
         """
         Runs a Verlet n-body simulation on the initialised box for nsteps
         with timestep dt, and returns [nsteps,N,3]-dim position and velocity
         narrays and a nsteps-length time narray.
         """
+        time = []; VMD_list = []
+        forces = get_forces()
+        i = 0
+        while (i < nsteps):
+            positions.append(get_positions())
+            velocities.append(get_velocities())
+            time.append(i*dt)
+            VMD_list.append(VMD_string())
+
+            update_pos(forces, dt)
+            temp_forces = forces
+            forces = get_forces()
+            update_vel(0.5*(temp_forces + forces), dt)
+
         return positions, velocities, times
-
-
