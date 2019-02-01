@@ -9,13 +9,13 @@ from Particle3D import Particle3D
 from Utilities import *
 from MDUtilities import *
 
-def main(arg1, arg2):
+def main():
     # Read parameter and output file names from sys.argv
     parameters, outfile = get_arguments()
 
-    Box = Box(parameters[0], parameters[2], parameters[1], parameters[3])
+    Simba = Box(parameters[0], parameters[2], parameters[1], parameters[3])
 
-    Box.simulate()
+    Simba.simulate(outfile, parameters[5], parameters[4])
 
     # Need the RSD etc methods here
 

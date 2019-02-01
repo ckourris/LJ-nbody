@@ -7,6 +7,7 @@ import MDUtilities
 from Utilities import LJ_Force
 import numpy as np
 import time
+import sys
 
 class Box:
     """ CLASS VARIABLES:
@@ -97,7 +98,7 @@ class Box:
         Enforces period boundary conditions and moves any particle that
         has strayed outside the box back into the box according to pbc.
         """
-        for particle in particles:
+        for particle in self.particles:
             particle.position = np.mod(particle.position,self.boxdim)
         return None
 
@@ -109,14 +110,14 @@ class Box:
         narrays and a nsteps-length time narray.
         """
         starttime = time.process_time()
-        time = []; VMD_list = []; positions = []; velocities = [];
+        timelist = []; VMD_list = []; positions = []; velocities = [];
         forces = self.get_forces()
-        for i in range(nsteps):
+        for t in range(nsteps):
             positions.append(self.get_positions())
             self.enforce_pbc()
             velocities.append(self.get_velocities())
-            time.append(i*dt)
-            VMD_list.append(self.VMD_string())
+            timelist.append(t*dt)
+            VMD_list.append(self.VMD_string(t))
 
             # Updates positions, velocities etc
             self.update_pos(forces, dt)
@@ -126,12 +127,10 @@ class Box:
 
         # Output VMD data to file
         vmdstring = ''.join(VMD_list)
-        with open(outputfile, 'r') as out:
+        with open(outputfile, 'w') as out:
             out.write(vmdstring)
-            out.close()
             print('Succesful VMD Data write to '+outputfile)
-        else:
-            print('FAILED VMD Data write to '+outputfile)
-        runtime = time.process_time() - startime
+
+        runtime = time.process_time() - starttime
         print('Simulate method ran for %f seconds'%runtime)
-        return np.array(positions), np.array(velocities), np.array(times)
+        return np.array(positions), np.array(velocities), np.array(timelist)

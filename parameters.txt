@@ -1,12 +1,12 @@
 Nparticles
 108
 Reduced Density
-1
+1.2
 LJ Cutoff Distance
-2.5
+2
 Reduced Temperature
-1
+12
 Reduced timestep
 0.01
 Simulation steps
-10000
+300

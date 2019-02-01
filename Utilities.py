@@ -24,7 +24,7 @@ def get_arguments():
     N = int(lines[1])
     rho = float(lines[3])
     LJ_cutoff = float(lines[5])
-    T = int(lines[7])
+    T = float(lines[7])
     dt = float(lines[9])
     nsteps = int(lines[11])
     return [N, rho, LJ_cutoff, T, dt, nsteps], VMDfile
