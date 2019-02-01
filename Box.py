@@ -6,6 +6,7 @@ from Particle3D import Particle3D
 import MDUtilities
 from Utilities import LJ_Force
 import numpy as np
+import time
 
 class Box:
     """ CLASS VARIABLES:
@@ -96,9 +97,8 @@ class Box:
         Enforces period boundary conditions and moves any particle that
         has strayed outside the box back into the box according to pbc.
         """
-        cube = [self.boxdim, self.boxdim, self.boxdim]
         for particle in particles:
-            particle.position = np.mod(particle.position,cube)
+            particle.position = np.mod(particle.position,self.boxdim)
         return None
 
 
@@ -108,21 +108,30 @@ class Box:
         with timestep dt, and returns [nsteps,N,3]-dim position and velocity
         narrays and a nsteps-length time narray.
         """
-        time = []; VMD_list = []
-        forces = get_forces()
-        i = 0
-        while (i < nsteps):
-            positions.append(get_positions())
-            enforce_pbc()
-            velocities.append(get_velocities())
+        starttime = time.process_time()
+        time = []; VMD_list = []; positions = []; velocities = [];
+        forces = self.get_forces()
+        for i in range(nsteps):
+            positions.append(self.get_positions())
+            self.enforce_pbc()
+            velocities.append(self.get_velocities())
             time.append(i*dt)
-            VMD_list.append(VMD_string())
+            VMD_list.append(self.VMD_string())
 
             # Updates positions, velocities etc
-            update_pos(forces, dt)
+            self.update_pos(forces, dt)
             temp_forces = forces
-            forces = get_forces()
-            update_vel(0.5*(temp_forces + forces), dt)
+            forces = self.get_forces()
+            self.update_vel(0.5*(temp_forces + forces), dt)
 
-
-        return positions, velocities, times
+        # Output VMD data to file
+        vmdstring = ''.join(VMD_list)
+        with open(outputfile, 'r') as out:
+            out.write(vmdstring)
+            out.close()
+            print('Succesful VMD Data write to '+outputfile)
+        else:
+            print('FAILED VMD Data write to '+outputfile)
+        runtime = time.process_time() - startime
+        print('Simulate method ran for %f seconds'%runtime)
+        return np.array(positions), np.array(velocities), np.array(times)

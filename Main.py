@@ -19,4 +19,5 @@ def main(arg1, arg2):
 
     # Need the RSD etc methods here
 
-main()
+if __name__ == '__main__':
+    main()
