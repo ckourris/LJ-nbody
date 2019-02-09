@@ -76,9 +76,24 @@ def RDF(pos, start, end, bins):
     return radial_density_histogram
 
 
-def MSD(pos, start, length):
+def MSD(pos, start, length, boxdim):
     """Given a [T, N,3]-dimensional narray of system positions indexed
     by time, this will calculate the mean square displacement for the
     system from time start to start+length exclusive
     relative to the given start time."""
+    start = 108*(start - 1)
+    end = 108*(length-1)
+
+    in_pos = np.array(pos[start:start+108][:,[1,2,3]],float)
+    mean_square_displacement = []
+    for t in range(start, end):
+        t_pos = np.array(pos[start+t*108:start+(t+1)*108][:,[1,2,3]],float)
+        sum = 0
+        for i in range(len(t_pos)):
+            arrow = t_pos - in_pos
+            rem = np.mod(arrow,boxdim) # The image in the first cube
+            mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
+            sum += np.linalg.norm(mic_separation_vector)
+        mean_square_displacement.append(sum)
+
     return mean_square_displacement

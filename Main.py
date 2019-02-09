@@ -17,7 +17,11 @@ def main():
 
     Simba.simulate(outfile, parameters[5], parameters[4])
 
-    # Need the RSD etc methods here
+    with open(outfile, 'r') as f:
+         position_list = np.array([line.strip().split() for line in f if not \
+         (line.startswith(('P')) or line.startswith(('108')))])
+
+    MSD_arr = MSD(position_list, 1,100, Simba.boxdim)
 
 if __name__ == '__main__':
     main()

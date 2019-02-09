@@ -90,7 +90,7 @@ class Box:
         VMD_output_string = '%i\nPoint = %i\n' % (len(self.particles), time)
         # Concatenate labels and positions for each particle
         for p in self.particles:
-            VMD_output_string += str(p) + '\n'
+            VMD_output_string += "s"+str(p) + '\n'
         return VMD_output_string
 
     def enforce_pbc(self):
@@ -118,7 +118,6 @@ class Box:
             velocities.append(self.get_velocities())
             timelist.append(t*dt)
             VMD_list.append(self.VMD_string(t))
-
             # Updates positions, velocities etc
             self.update_pos(forces, dt)
             temp_forces = forces
