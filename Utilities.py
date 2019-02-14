@@ -58,6 +58,14 @@ def Total_PE(positions, cutoff):
     """This function returns the total calculated potential energy
     for a set of system positions given by an [N, 3]-dimensional
     narray, using a given LJ cutoff."""
+    N = len(particles)
+    energy = 0
+    for i in range(N):
+        for j in range(i):
+            # Find mutual potential for the interaction between particle i and j
+            sep = Particle3D.pbc_sep(positions[i], positions[j])
+            energy += LJ_Potential(sep, cutoff)
+
     return energy
 
 
@@ -69,10 +77,35 @@ def Total_KE(velocities):
     return 0.5*mass*squares
 
 
-def RDF(pos, start, end, bins):
+def Bin_particles(pos, bins, boxdim):
+    """Given a [N,3]-dimensional narray of system positions, this will
+    calculate the distance between all particle pairs and bin these
+    using the given bins into an entries array. Finally the array will
+    be normalized by the number of the particles"""
+    N = len(pos)
+    sep_arr = []
+    for i in range(N):
+        for j in range(i):
+            # Find distance between all pairs of points and append to array
+            arrow = pos[i] - pos[j]
+            rem = np.mod(arrow,boxdim) # The image in the first cube
+            mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
+            sep_arr.append(mic_separation_vector)
+
+    bin_entries = np.histogram(sep_arr, bins = bins)
+    return bin_entries
+
+def RDF(pos, start, end, bins, boxdim):
     """Given a [T, N,3]-dimensional narray of system positions indexed
     by time, this will calculate the radial density function histogram
     averaged from time start to end exclusive using the given bins."""
+    rdf = []
+    for t in range(start, end):
+        rdf[t] += Bin_particles(pos[i], bins, boxdim)
+    for i in range(1,len(rdf)):
+        rdf[i] = rdf[i]/(4*np.pi*bins[i]**2)
+
+    radial_density_histogram = rdf
     return radial_density_histogram
 
 
@@ -81,19 +114,33 @@ def MSD(pos, start, length, boxdim):
     by time, this will calculate the mean square displacement for the
     system from time start to start+length exclusive
     relative to the given start time."""
-    start = 108*(start - 1)
-    end = 108*(length-1)
 
-    in_pos = np.array(pos[start:start+108][:,[1,2,3]],float)
+    in_pos = pos[0]
     mean_square_displacement = []
-    for t in range(start, end):
-        t_pos = np.array(pos[start+t*108:start+(t+1)*108][:,[1,2,3]],float)
+    times = []
+    for t in range(start, length):
+        t_pos = pos[t]
         sum = 0
         for i in range(len(t_pos)):
             arrow = t_pos - in_pos
             rem = np.mod(arrow,boxdim) # The image in the first cube
             mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
             sum += np.linalg.norm(mic_separation_vector)
-        mean_square_displacement.append(sum)
 
-    return mean_square_displacement
+        mean_square_displacement.append(sum/N)
+        times.append(t)
+
+    return mean_square_displacement,times
+
+def get_output(outfile):
+    with open(outfile, 'r') as f:
+         position_list = np.array([line.strip().split() for line in f if not \
+         (line.startswith(('P')) or line.startswith(('108')))])
+
+    position_list = np.split(position_list, len(position_list)/108)
+
+    for i in range(len(position_list)):
+        position_list[i] = np.array(position_list[i][:,[1,2,3]],float)
+
+
+    return position_list

@@ -95,9 +95,9 @@ class Particle3D(object):
     @staticmethod
     def pbc_sep(p1, p2, boxdim):
         """
-        Returns the separation vector of two particle objects based on the minimum image convention
-        and the periodic boundary conditions, as an narray.
-        """
+        Returns the separation vector of two particle objects based on the
+        minimum image convention and the periodic boundary conditions, as
+        an narray."""
         arrow = Particle3D.sep(p1,p2)
         rem = np.mod(arrow,boxdim) # The image in the first cube
         mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
