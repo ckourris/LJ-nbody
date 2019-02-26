@@ -27,14 +27,14 @@ void force(double* p1, double* p2, double* output, double boxdim, double cutoff)
     return;
 }
 
-void copyvector(double* invec, double* outvec, bool negative){
-    for(int i = 0; i < 3; i++) outvec[i]=invec[i]* (negative ? -1 : 1);
+void addvector(double* invec, double* outvec, bool negative){
+    for(int i = 0; i < 3; i++) outvec[i] += invec[i]* (negative ? -1 : 1);
     return;
 }
 
 void getforces(double* in_array, double* out_array, int N, double boxdim, double cutoff){
-    // Set out ndarray to zero
-    //for(int i = 0; i<3*N; i++) out_array[i]=0;
+    //Set out ndarray to zero
+    for(int i = 0; i<3*N; i++) out_array[i]=0;
     
     // Setup temporary force vector;
     double forcevar[3];
@@ -44,8 +44,8 @@ void getforces(double* in_array, double* out_array, int N, double boxdim, double
         for(int j = 0; j < i; j++){
             force(in_array+i*3, in_array+j*3, forcevar, boxdim, cutoff);
 //          cout << forcevar[0] << ' ' << forcevar[1] << endl;
-            copyvector(forcevar, out_array+i*3, 0);
-            copyvector(forcevar, out_array+j*3, 1);
+            addvector(forcevar, out_array+i*3, 0);
+            addvector(forcevar, out_array+j*3, 1);
         }
     }
 
