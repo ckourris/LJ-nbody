@@ -90,22 +90,21 @@ def Bin_particles(pos, bins, boxdim):
             arrow = pos[i] - pos[j]
             rem = np.mod(arrow,boxdim) # The image in the first cube
             mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
-            sep_arr.append(mic_separation_vector)
+            sep_arr.append(np.linalg.norm(mic_separation_vector))
 
-    bin_entries = np.histogram(sep_arr, bins = bins)
+    bin_entries = np.histogram(sep_arr, bins = bins)[0]/N
     return bin_entries
 
 def RDF(pos, start, end, bins, boxdim):
     """Given a [T, N,3]-dimensional narray of system positions indexed
     by time, this will calculate the radial density function histogram
     averaged from time start to end exclusive using the given bins."""
-    rdf = []
-    for t in range(start, end):
-        rdf[t] += Bin_particles(pos[i], bins, boxdim)
-    for i in range(1,len(rdf)):
-        rdf[i] = rdf[i]/(4*np.pi*bins[i]**2)
+    data = [Bin_particles(cpos, bins, boxdim) for cpos in pos[start:end]]
 
-    radial_density_histogram = rdf
+    radial_density_histogram = sum(data)/len(data)
+    volumes = 4*np.pi*((bins[:-1]+bins[1:])/2)**2*(bins[1]-bins[0])
+    radial_density_histogram = radial_density_histogram/volumes
+
     return radial_density_histogram
 
 
@@ -125,9 +124,9 @@ def MSD(pos, start, length, boxdim):
             arrow = t_pos - in_pos
             rem = np.mod(arrow,boxdim) # The image in the first cube
             mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
-            sum += np.linalg.norm(mic_separation_vector)
+            sum += np.linalg.norm(mic_separation_vector)**2
 
-        mean_square_displacement.append(sum/N)
+        mean_square_displacement.append(sum/pos.shape[1])
         times.append(t)
 
     return mean_square_displacement,times
