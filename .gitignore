@@ -1,2 +1,6 @@
 vmdoutput.xyz
 test_read.py
+build/
+Cforces.cpp
+*.so
+

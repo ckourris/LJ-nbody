@@ -9,6 +9,10 @@ import numpy as np
 import time
 import sys
 
+CPP_ENABLED=True
+if CPP_ENABLED:
+    import cforce
+
 class Box:
     """ CLASS VARIABLES:
     particles - List containing information about all particles.
@@ -65,6 +69,12 @@ class Box:
         """Returns [N,3]-dim narray of forces on all particles."""
         N = len(self.particles)
         particle_forces = np.zeros( (N,3) )
+        
+        # Use C++ version if CPP_ENABLED
+        if(CPP_ENABLED):
+            cforce.c_getforces(self.get_positions(), particle_forces,
+                        self.boxdim, self.LJ_cutoff)
+            return particle_forces
 
         # Iterate over all i<j, then calculate
         # force for each i, j combination

@@ -24,7 +24,7 @@ def main():
     #plt.show()
 
 
-    rdf_arr = RDF(position_list, 100, 299, np.arange(0,5,0.1), Simba.boxdim)
+    rdf_arr = RDF(position_list, 200, 300, np.arange(0,5,0.1), Simba.boxdim)
     rdf = Bin_particles(position_list[10], np.arange(0,5,0.1), Simba.boxdim)
     plt.plot(np.arange(0.1,5.0,0.1),rdf_arr)
     plt.show()
