@@ -4,6 +4,7 @@
 """
 import numpy as np
 import sys
+from Particle3D import Particle3D
 
 def get_arguments():
     """"The program is called with two filenames as input. The first one
@@ -54,7 +55,7 @@ def LJ_Force(vector, cutoff):
     return force
 
 
-def Total_PE(positions, cutoff):
+def Total_PE(particles, cutoff, boxdim):
     """This function returns the total calculated potential energy
     for a set of system positions given by an [N, 3]-dimensional
     narray, using a given LJ cutoff."""
@@ -63,7 +64,7 @@ def Total_PE(positions, cutoff):
     for i in range(N):
         for j in range(i):
             # Find mutual potential for the interaction between particle i and j
-            sep = Particle3D.pbc_sep(positions[i], positions[j])
+            sep = Particle3D.pbc_sep(particles[i], particles[j], boxdim)
             energy += LJ_Potential(sep, cutoff)
 
     return energy
@@ -131,12 +132,12 @@ def MSD(pos, start, length, boxdim):
 
     return mean_square_displacement,times
 
-def get_output(outfile):
+def get_output(outfile, N):
     with open(outfile, 'r') as f:
          position_list = np.array([line.strip().split() for line in f if not \
-         (line.startswith(('P')) or line.startswith(('108')))])
+         (line.startswith(('P')) or line.startswith((str(N))))])
 
-    position_list = np.split(position_list, len(position_list)/108)
+    position_list = np.split(position_list, len(position_list)/N)
 
     for i in range(len(position_list)):
         position_list[i] = np.array(position_list[i][:,[1,2,3]],float)

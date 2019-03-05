@@ -8,4 +8,3 @@ setup( cmdclass={'build_ext': build_ext},
        include_dirs=[numpy.get_include()],
        language='c++')]
 )
-

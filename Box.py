@@ -4,7 +4,7 @@
 """
 from Particle3D import Particle3D
 import MDUtilities
-from Utilities import LJ_Force
+from Utilities import *
 import numpy as np
 import time
 import sys
@@ -69,7 +69,7 @@ class Box:
         """Returns [N,3]-dim narray of forces on all particles."""
         N = len(self.particles)
         particle_forces = np.zeros( (N,3) )
-        
+
         # Use C++ version if CPP_ENABLED
         if(CPP_ENABLED):
             cforce.c_getforces(self.get_positions(), particle_forces,
@@ -87,6 +87,23 @@ class Box:
                 particle_forces[i] += -force # Using Newtons 3rd law
 
         return particle_forces
+
+    def get_energies(self):
+        """Returns 1x3 array of Kinetic, Potential and Total energy at time t
+        """
+        N = len(self.particles)
+        energies = np.zeros(3)
+
+        if(CPP_ENABLED):
+            cforce.c_getenergies(self.getpositions(), self.get_velocities(), \
+                  energies, self.boxdim, N)
+            return energies
+
+        pot = Total_PE(self.particles, self.cutoff, self.boxdim)
+        kin = Total_KE(self.get_velocities)
+
+        return [pot, kin, pot+kin]
+
 
     def VMD_string(self, time):
         """
@@ -121,6 +138,7 @@ class Box:
         """
         starttime = time.process_time()
         timelist = []; VMD_list = []; positions = []; velocities = [];
+        energies = []
         forces = self.get_forces()
         for t in range(nsteps):
             positions.append(self.get_positions())
@@ -128,6 +146,8 @@ class Box:
             velocities.append(self.get_velocities())
             timelist.append(t*dt)
             VMD_list.append(self.VMD_string(t))
+            #energies = get_energies()
+
             # Updates positions, velocities etc
             self.update_pos(forces, dt)
             temp_forces = forces
@@ -139,7 +159,13 @@ class Box:
         with open(outputfile, 'w') as out:
             out.write(vmdstring)
             print('Succesful VMD Data write to '+outputfile)
-
+        """
+        with open("energyfile.txt", 'w') as out:
+            for t in range(nsteps):
+                str = "%f %f %f %f"% (t*dt, energies[0], energies[1], energies[2]) + '\n'
+                out.write(str)
+            print('Successful Energies write to energyfile.txt')
+        """
         runtime = time.process_time() - starttime
         print('Simulate method ran for %f seconds'%runtime)
         return np.array(positions), np.array(velocities), np.array(timelist)
