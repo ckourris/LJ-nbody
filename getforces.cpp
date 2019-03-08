@@ -79,7 +79,7 @@ void getforces(double* in_array, double* out_array, int N, double boxdim, double
     return;
 }
 
-void get_energies(double* pos_array, double* v_array, double* out_array,
+void getenergies(double* pos_array, double* v_array, double* out_array,
                   int N, double boxdim, double cutoff){
     double kinetic = 0;
     double poten = 0;

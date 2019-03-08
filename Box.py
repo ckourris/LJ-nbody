@@ -95,8 +95,8 @@ class Box:
         energies = np.zeros(3)
 
         if(CPP_ENABLED):
-            cforce.c_getenergies(self.getpositions(), self.get_velocities(), \
-                  energies, self.boxdim, N)
+            cforce.c_getenergies(self.get_positions(), self.get_velocities(), \
+                  energies, self.boxdim, self.LJ_cutoff)
             return energies
 
         pot = Total_PE(self.particles, self.cutoff, self.boxdim)
@@ -146,7 +146,7 @@ class Box:
             velocities.append(self.get_velocities())
             timelist.append(t*dt)
             VMD_list.append(self.VMD_string(t))
-            #energies = get_energies()
+            energies = self.get_energies()
 
             # Updates positions, velocities etc
             self.update_pos(forces, dt)
@@ -159,13 +159,13 @@ class Box:
         with open(outputfile, 'w') as out:
             out.write(vmdstring)
             print('Succesful VMD Data write to '+outputfile)
-        """
+
         with open("energyfile.txt", 'w') as out:
             for t in range(nsteps):
                 str = "%f %f %f %f"% (t*dt, energies[0], energies[1], energies[2]) + '\n'
                 out.write(str)
             print('Successful Energies write to energyfile.txt')
-        """
+
         runtime = time.process_time() - starttime
         print('Simulate method ran for %f seconds'%runtime)
         return np.array(positions), np.array(velocities), np.array(timelist)
