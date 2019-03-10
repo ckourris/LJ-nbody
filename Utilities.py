@@ -13,10 +13,11 @@ def get_arguments():
     This function parses those inputs and returns a list with the
     contents of the first file
     and a string with the name of the second file."""
-    if len(sys.argv) != 3:
-        print("Wrong number of arguments, give two, e.g.:")
-        print("Main.py parameters.txt vmdoutput.xyz")
+    if (len(sys.argv) > 4) or (len(sys.argv) < 3):
+        print("Wrong number of arguments, give two (and -a for acceleration), e.g.:")
+        print("Main.py parameters.txt vmdoutput.xyz -a")
         raise Exception('Wrong arguments')
+    cpp = True if ('-a' in sys.argv) else False
     paramfilename = sys.argv[1]
     VMDfile = sys.argv[2]
     # Now get parameters individually:
@@ -28,7 +29,7 @@ def get_arguments():
     T = float(lines[7])
     dt = float(lines[9])
     nsteps = int(lines[11])
-    return [N, rho, LJ_cutoff, T, dt, nsteps], VMDfile
+    return [N, rho, LJ_cutoff, T, dt, nsteps], VMDfile, cpp
 
 
 def LJ_Potential(vector, cutoff):
@@ -73,7 +74,9 @@ def Total_PE(particles, cutoff, boxdim):
 def Total_KE(velocities):
     """This function returns the total calculated kinetic energy
     for an [N,3] dimensional narray of system velocities."""
-    squares = np.linalg.norm(velocities)**2 # sum of squares of velocities
+    squares = 0
+    for i in range(len(velocities)):
+        squares += np.linalg.norm(velocities[i])**2 # sum of squares of velocities
     mass = 1 # Setting argon mass to 1
     return 0.5*mass*squares
 
@@ -106,7 +109,7 @@ def RDF(pos, start, end, bins, boxdim):
     volumes = 4*np.pi*((bins[:-1]+bins[1:])/2)**2*(bins[1]-bins[0])
     radial_density_histogram = radial_density_histogram/volumes
 
-    return radial_density_histogram
+    return radial_density_histogram, (bins[:-1]+bins[1:])/2
 
 
 def MSD(pos, start, length, boxdim):
@@ -117,8 +120,7 @@ def MSD(pos, start, length, boxdim):
 
     in_pos = pos[0]
     mean_square_displacement = []
-    times = []
-    for t in range(start, length):
+    for t in range(start, length+1):
         t_pos = pos[t]
         sum = 0
         for i in range(len(t_pos)):
@@ -128,9 +130,8 @@ def MSD(pos, start, length, boxdim):
             sum += np.linalg.norm(mic_separation_vector)**2
 
         mean_square_displacement.append(sum/pos.shape[1])
-        times.append(t)
 
-    return mean_square_displacement,times
+    return mean_square_displacement
 
 def get_output(outfile, N):
     with open(outfile, 'r') as f:
@@ -142,5 +143,16 @@ def get_output(outfile, N):
     for i in range(len(position_list)):
         position_list[i] = np.array(position_list[i][:,[1,2,3]],float)
 
-
     return position_list
+
+def write_output(*args):
+    outfile = args[0]
+    iters = len(args[1])
+    N = len(args)
+    with open(outfile, "w") as out:
+        for t in range(0,iters):
+            str = ''
+            for i in range(1,N):
+                str += "%f "% (args[i][t])
+            str += '\n'
+            out.write(str)
