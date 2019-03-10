@@ -16,7 +16,7 @@ def main():
     parameters, outfile, cpp = get_arguments()
 
     # Create simulation Box. See design document for details.
-    Simba = Box(parameters[0], parameters[2], parameters[1], parameters[3])
+    Simba = Box(parameters[0], parameters[2], parameters[1], parameters[3], cpp)
     position_list, timelist = Simba.simulate(outfile, parameters[5], parameters[4])
 
     # If you only want to load data to test the observable use the following

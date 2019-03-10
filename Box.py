@@ -8,10 +8,7 @@ from Utilities import *
 import numpy as np
 import time
 import sys
-
-CPP_ENABLED=True
-if CPP_ENABLED:
-    import cforce
+import cforce
 
 class Box:
     """ CLASS VARIABLES:
@@ -19,7 +16,7 @@ class Box:
     boxdim - Dimension of box.
     LJ_cutoff - Lennard-Jones cutoff distance.
     """
-    def __init__(self, N, LJ_cutoff, rho, T):
+    def __init__(self, N, LJ_cutoff, rho, T, cpp):
         """
         Initialises simulation box with given parameters using
         function from MDUtilities.py to set particle positions and velocities.
@@ -29,7 +26,7 @@ class Box:
         self.particles = [Particle3D(str(i)) for i in range(1,N+1)]
 
         self.LJ_cutoff = LJ_cutoff # Save LJ_cutoff distance.
-
+        self.cppenabled = cpp
         # Set particle positions, get box dimensions:
         self.boxdim = MDUtilities.set_initial_positions(rho, self.particles)[0]
         MDUtilities.set_initial_velocities(T, self.particles) # Set velocities
@@ -71,7 +68,7 @@ class Box:
         particle_forces = np.zeros( (N,3) )
 
         # Use C++ version if CPP_ENABLED
-        if(CPP_ENABLED):
+        if(self.cppenabled):
             cforce.c_getforces(self.get_positions(), particle_forces,
                         self.boxdim, self.LJ_cutoff)
             return particle_forces
@@ -94,7 +91,7 @@ class Box:
         N = len(self.particles)
         energies = np.zeros(3)
 
-        if(CPP_ENABLED):
+        if(self.cppenabled):
             cforce.c_getenergies(self.get_positions(), self.get_velocities(), \
                   energies, self.boxdim, self.LJ_cutoff)
             return np.array(energies)
@@ -165,7 +162,7 @@ class Box:
             out.write(vmdstring)
             print('Succesful VMD Data write to '+outputfile+'\n')
 
-        write_output("energyfile2.txt", timelist, PE, KE, TE)
+        write_output("energyfile.txt", timelist, PE, KE, TE)
         print('Successful Energies write to energyfile.txt \n')
 
         runtime = time.process_time() - starttime
