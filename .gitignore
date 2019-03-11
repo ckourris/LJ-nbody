@@ -3,4 +3,4 @@ test_read.py
 build/
 Cforces.cpp
 *.so
-
+__pycache__/
