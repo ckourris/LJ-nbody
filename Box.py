@@ -99,7 +99,7 @@ class Box:
         pot = Total_PE(self.particles, self.LJ_cutoff, self.boxdim)
         kin = Total_KE(self.get_velocities())
 
-        return [pot, kin, pot+kin]
+        return np.array([pot, kin, pot+kin])
 
 
     def VMD_string(self, time):

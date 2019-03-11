@@ -86,7 +86,7 @@ void getenergies(double* pos_array, double* v_array, double* out_array,
 
     for (int i = 0; i<N; i++){
       for (int j = 0; j < i; j++){
-        poten += potential(pos_array+i*3, pos_array+j*3, cutoff, boxdim);
+        poten += potential(pos_array+i*3, pos_array+j*3, boxdim, cutoff);
       }
     }
 
