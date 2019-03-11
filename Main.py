@@ -20,16 +20,17 @@ def main():
     position_list, timelist = Simba.simulate(outfile, parameters[5], parameters[4])
 
     # If you only want to load data to test the observable use the following
-    # command and comment the above two. In that case specify the outfile:
-    #outfile = ""
+    # command and comment the one directly above. In that case specify the outfile:
+    #outfile = "vmdouput.xyz"
     #position_list = np.array(get_output(outfile, parameters[0]))
+    #timelist = parameters[4]*np.arange(parameters[5])
 
     # Define MSD and RDF parameters
     msd_start = 1 # Need something >= 1
-    msd_end = 200 # Need something > msd_start and < n_steps
+    msd_end = 4500 # Need something > msd_start and < n_steps
     rdf_bins = np.arange(0,5,0.1)
-    rdf_start = 100 # Need > 0
-    rdf_end = 200 # Need < n_steps
+    rdf_start = 1 # Need > 0
+    rdf_end = 4500 # Need < n_steps
 
     print("Calculating the Mean Square Displacement function\n")
     MSD_arr = MSD(position_list, msd_start, msd_end, Simba.boxdim)
@@ -40,7 +41,7 @@ def main():
     plt.xlabel("Time")
     plt.ylabel("MSD(t)/sigma^2")
     #plt.show()
-    plt.savefig('MSD.png')
+    plt.savefig('MSD_gas.png')
     plt.close()
 
     print("Calculating the Radial Distribution function\n")
@@ -51,9 +52,9 @@ def main():
     plt.xlabel("Distance/sigma")
     plt.ylabel("g(r)")
     #plt.show()
-    plt.savefig('RDF.png')
+    plt.savefig('RDF_gas.png')
 
-    print("Both plots saved in directory. Simulation has been successful")
+    print("Both plots saved in directory. Simulation has been successful.")
 
 if __name__ == '__main__':
     main()
