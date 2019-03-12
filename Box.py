@@ -33,7 +33,7 @@ class Box:
             T - Initial temperature
             cpp - Boolean indicating C++ acceleration or not
         """
-
+        print("Box initialised with T=%f, number density=%f. \n"%(T, rho))
         # Initialise list of particles with zero position and velocity
         # and label equal to their number
         self.particles = [Particle3D(str(i)) for i in range(1,N+1)]
@@ -167,7 +167,6 @@ class Box:
             positions - [nsteps,N,3]-dim position numpy array for all timestep
             timelist - [N]-dim narray containing timestamps for each timestep.
         """
-
         starttime = time.process_time() # For simulation length timing purposes
         # Initialisation of all the lists used throughout simulations.
         timelist, VMD_list, positions, velocities = [], [], [], [];
@@ -209,5 +208,5 @@ class Box:
         runtime = time.process_time() - starttime
         print('Simulate method ran for %f seconds\n'%runtime)
 
-        
+
         return np.array(positions), np.array(timelist)

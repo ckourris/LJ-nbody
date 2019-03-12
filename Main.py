@@ -76,6 +76,7 @@ def main():
 
     plt.show()
 
+    print("Post Simulation Fitted Temperature: ", np.mean(KE)/(1.5*len(Simba.particles)))
     print("All plots saved in directory. Simulation has been successful.")
 
 if __name__ == '__main__':
