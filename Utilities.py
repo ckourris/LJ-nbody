@@ -118,7 +118,7 @@ def MSD(pos, start, length, boxdim):
     system from time start to start+length exclusive
     relative to the given start time."""
 
-    in_pos = pos[0]
+    in_pos = pos[start]
     mean_square_displacement = []
     for t in range(start, length+1):
         t_pos = pos[t]
