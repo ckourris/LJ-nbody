@@ -21,15 +21,15 @@ def main():
 
     # If you only want to load data to test the observable use the following
     # command and comment the one directly above. In that case specify the outfile:
-    # outfile = "vmdoutput.xyz"
-    # position_list = np.array(get_output(outfile, parameters[0]))
+    #outfile = "vmdoutput.xyz"
+    #position_list = np.array(get_output(outfile, parameters[0]))
     #timelist = parameters[4]*np.arange(parameters[5])
 
     # Define MSD and RDF parameters
-    msd_start = 9800 # Need something >= 1
+    msd_start = 7000 # Need something >= 1
     msd_end = 9999 # Need something > msd_start and < n_steps
     rdf_bins = np.arange(0,int(Simba.boxdim),0.1)
-    rdf_start = 9800 # Need > 0
+    rdf_start = 9900 # Need > 0
     rdf_end = 9999 # Need < n_steps
 
     print("Calculating the Mean Square Displacement function\n")
@@ -39,8 +39,8 @@ def main():
     plt.figure(1)
     plt.plot(timelist[msd_start - 1:msd_end], MSD_arr)
     plt.title("Mean Square Displacement")
-    plt.xlabel("Time")
-    plt.ylabel("MSD(t)/sigma^2")
+    plt.xlabel("Time $\rightarrow$")
+    plt.ylabel("MSD(t)/sigma^2 $\rightarrow$")
     #plt.show()
     plt.savefig('Plots/MSD_gas.png')
 
@@ -50,20 +50,20 @@ def main():
     plt.figure(2)
     plt.plot(rdf_bins,rdf_arr)
     plt.title("Radial Distribution Function")
-    plt.xlabel("Distance/sigma")
-    plt.ylabel("g(r)")
+    plt.xlabel("Distance/sigma $\rightarrow$")
+    plt.ylabel("g(r) $\rightarrow$")
     #plt.show()
     plt.savefig('Plots/RDF_gas.png')
 
     print("Plotting energy functions\n")
-    timelist, KE, PE, TE = np.loadtxt('energyfile.txt', usecols=[0,1,2,3], unpack=True)#,dtype=float)
+    timelist, PE, KE, TE = np.loadtxt('energyfile.txt', usecols=[0,1,2,3], unpack=True)#,dtype=float)
     plt.figure(3)
     plt.plot(timelist,KE)
     plt.plot(timelist,PE)
     plt.plot(timelist,TE)
     plt.title("Energy as a function of time")
-    plt.xlabel("Time")
-    plt.ylabel("Energy")
+    plt.xlabel("Time $\rightarrow$")
+    plt.ylabel("Energy $\rightarrow$")
     plt.legend(['KE','PE','TE'])
 
     plt.savefig('Plots/E.png')
