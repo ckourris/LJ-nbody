@@ -4,3 +4,14 @@ build/
 Cforces.cpp
 *.so
 __pycache__/
+MSD_output.txt
+Main.c
+Plots/
+RDF_output.txt
+a.out
+accelerate_lib.cpp
+accelerate_module.cpp
+energyfile.txt
+parameters.c
+vmdout.c
+vmdout.xyz

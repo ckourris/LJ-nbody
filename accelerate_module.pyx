@@ -1,5 +1,7 @@
-# This library is a python wrapper to calculate get_forces using
-# C(++) accelerated code.
+# This library is a python wrapper to calculate get_forces and
+# get_energies using C(++) accelerated code.
+# It is imported with "import accelerate_lib".
+# Activate C++ acceleration in Main.py by passing the argument "-a".
 
 cimport numpy as np
 np.import_array()
