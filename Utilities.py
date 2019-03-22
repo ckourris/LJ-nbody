@@ -132,7 +132,7 @@ def Bin_particles(pos, bins, boxdim):
             mic_separation_vector = np.mod(rem+boxdim/2,boxdim)-boxdim/2
             sep_arr.append(np.linalg.norm(mic_separation_vector))
 
-    bin_entries = np.histogram(sep_arr, bins = bins)[0]/N
+    bin_entries = np.histogram(sep_arr, bins = bins)[0]/(N/2)
 
     return bin_entries
 
