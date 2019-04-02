@@ -1,0 +1,104 @@
+<h1 id="lennardjonesnbodysimulation">Lennard Jones N-body Simulation</h1>
+
+<p>Our program simulates N-body systems interacting through the Lennard-Jones pair potential. The simulation uses periodic boundary conditions and the
+minimum image convention.</p>
+
+<h2 id="gettingstarted">Getting Started</h2>
+
+<p>These instructions will give you an outline of the program and allow you to run the simulation on your local machine for development and testing purposes. The program comes with an optional <em>accelerated</em> version which is recommended. More on this in the <strong>Installing</strong> section.</p>
+
+<h3 id="modules">Modules</h3>
+
+<ul>
+<li><code>Main.py</code> The main method which is called to run the simulation.</li>
+
+<li><code>Particle3D.py</code>, <code>Box.py</code> The classes that are used throughout the simulation.</li>
+
+<li><code>MDUtilities.py</code>,<code>Utilities.py</code> Modules that contain the initializations, integrators and analysis functions.</li>
+
+<li><code>accelerate.cpp</code> C++ Accelerated functions module.</li>
+
+<li><code>accelerate_module.pyx</code> The Cython3 wrapper to translate the C++ code into Python3.</li>
+
+<li><code>accelerate.h</code> C++ headers file.</li>
+
+<li><code>compilec.py</code> Python module to compile the C++ library.</li>
+</ul>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<p>The code is written in  <code>python3</code> and is therefore required for the program to run. There is an optional accelerated version which uses some c++ modules. We have supplied the compiled acceleration library so that the code will work immediately on another linux system. If it does not it needs to be recompiled. In order to do this you need <code>cython3</code> to wrap the <code>C++</code> code with python. See next section for information.</p>
+
+<h3 id="compilingc">Compiling C++</h3>
+
+<p>It is recommended that you use the C++ code because it runs the simulation around 30 times faster. To ensure that you have <code>cython3</code> use the following command:</p>
+
+<pre><code>sudo apt-get install cython3
+</code></pre>
+
+<p>In case the C++ library needs to be compiled before running, this is easily done by:</p>
+
+<pre><code>python3 compilec.py build_ext --inplace
+</code></pre>
+
+<p>Note that the above command produces very verbose output. This completes the compilation process.</p>
+
+<h2 id="runningthetests">Running the tests</h2>
+
+<p>To run the simulation, use e.g. the <code>solid.txt</code> file with the desired parameters and run:</p>
+
+<pre><code> python3 Main.py parameters.txt vmdoutput.xyz
+</code></pre>
+
+<p>Note that the above Python only mode is very slow. For the optional accelerated version run (this is recommended):</p>
+
+<pre><code> python3 Main.py parameters.txt vmdoutput.xyz -a
+</code></pre>
+
+<p>This will produce the following files:</p>
+
+<ul>
+<li><code>vmdoutput.xyz</code> which contains the positions of the files for every timestep. It can be loaded directly into VMD for visualization.</li>
+
+<li><code>energyfile.txt</code> which contains the timestep, kinetic energy, potential energy and total energy.</li>
+
+<li><code>MSD_output.txt</code> which contains the timestep and MSD values.</li>
+
+<li><code>RDF_output.txt</code> which contains the timestep and RDF values.</li>
+</ul>
+
+<p>The program will also create plots of MSD, RDF and the energies and save them in the <code>Plots</code> directory.</p>
+
+<h3 id="observablescalculations">Observables calculations</h3>
+
+<p>The Main method ends by the Means Square Displacement and Radial Distribution Function and Energies calculations. Those produce a plot each depending on the range of times needed.</p>
+
+<p>You can alter the parameters by modifying the following part in <code>Main.py</code>:</p>
+
+<pre><code>  msd_start = 7000
+  msd_end = 9999
+  rdf_bins = np.arange(0,5,0.1)
+  rdf_start = 9900
+  rdf_end = 9999
+</code></pre>
+
+<p>The <code>rdf_bins</code> creates an array for the radii to be plotted on the RDF diagram.</p>
+
+<p>It is possible to do further tests without running the simulation again. To load the data (positions) of any data file in the simulation use the <code>get_output</code> method in <code>Utilities.py</code> and comment out the simulation run of the box. Replace the outfile string with the desired file name and uncomment the following lines in the code:</p>
+
+<pre><code>outfile = ""
+position_list = np.array(get_output(outfile, parameters[0]))
+</code></pre>
+
+<h2 id="authors">Authors</h2>
+
+<ul>
+<li><p><strong>Christos Kourris</strong> - <a href="https://github.com/ckourris">ckourris</a></p></li>
+
+<li><p><strong>Ethan van Woerkom</strong> - <a href="https://github.com/Edekje">Edekje</a></p></li>
+</ul>
+
+<h2 id="license">License</h2>
+
+<p>This project is licensed under the MIT License - see the <a href="LICENSE.md">LICENSE.md</a> file for details. The project is hosted on the following github repository:
+<a href="https://github.com/Edekje/LJ-nbody">LJ-nbody</a></p>
